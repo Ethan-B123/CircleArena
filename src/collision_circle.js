@@ -9,8 +9,8 @@ class CollisionCircle {
   }
 
   update() {
-    this.position.x += this.velocity.x
-    this.position.y += this.velocity.y
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
     this.velocity.x *= this.dampening;
     this.velocity.y *= this.dampening;
   }
