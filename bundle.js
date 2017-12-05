@@ -208,7 +208,7 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
       size: 30,
       velocity: { x:0, y:0 },
       mass: 10,
-      color: "#99e"
+      color: "#9999ee"
     });
     this.input = {
       up: false,
@@ -480,7 +480,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
       size: 30,
       velocity: {x: 0, y: 0},
       mass: 10,
-      color: "#f44"
+      color: "#ff4444"
     });
     this.seek = {
       x: 0,
@@ -492,7 +492,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
   update() {
     const angle =
       __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].angleBetween(this.position, this.player.position);
-    this.seek = __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].fromAngleSpeed(angle, 0.6);
+    this.seek = __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].fromAngleSpeed(angle, 0.5);
     this.velocity.x += this.seek.x;
     this.velocity.y += this.seek.y;
     super.update();
@@ -508,8 +508,38 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collision_circle__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__player__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__enemy__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__vector__ = __webpack_require__(5);
 
-// import Vector from "./vector";
+
+
+
+
+/**
+ * code from https://gist.github.com/rosszurowski/67f04465c424a9bc0dae
+ *
+ * A linear interpolator for hexadecimal colors
+ * @param {String} a
+ * @param {String} b
+ * @param {Number} amount
+ * @example
+ * // returns #7F7F7F
+ * lerpColor('#000000', '#ffffff', 0.5)
+ * @returns {String}
+ */
+function lerpColor(a, b, amount) {
+
+    var ah = parseInt(a.replace(/#/g, ''), 16),
+        ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+        bh = parseInt(b.replace(/#/g, ''), 16),
+        br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+        rr = ar + amount * (br - ar),
+        rg = ag + amount * (bg - ag),
+        rb = ab + amount * (bb - ab);
+
+    return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
+}
 
 class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* default */] {
   constructor({ position }) {
@@ -518,12 +548,32 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
       size: 20,
       velocity: {x: 0, y: 0},
       mass: 2,
-      color: "#4f4"
+      color: "#44ff44"
     });
     this.dampening = 0.99;
+    this.controller = this;
+    this.safe = true;
   }
 
-  
+  onHit(otherCircle) {
+    if (otherCircle instanceof __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */] || otherCircle instanceof __WEBPACK_IMPORTED_MODULE_2__enemy__["a" /* default */]) {
+      this.controller = otherCircle;
+      this.color = otherCircle.color;
+      this.safe = false;
+    }
+  }
+
+  update() {
+    super.update();
+    const speed = new __WEBPACK_IMPORTED_MODULE_3__vector__["a" /* default */](this.velocity).length();
+    if (speed > 1 && speed < 2 && !this.safe) {
+      this.color = lerpColor("#ffffff", this.controller.color, speed-1);
+    } else if (speed <= 1) {
+      this.safe = true;
+      this.controller = this;
+      this.color = "#44ff44"
+    }
+  }
 
 }
 

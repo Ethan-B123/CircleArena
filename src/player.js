@@ -7,7 +7,7 @@ class Player extends CollisionCircle {
       size: 30,
       velocity: { x:0, y:0 },
       mass: 10,
-      color: "#99e"
+      color: "#9999ee"
     });
     this.input = {
       up: false,

@@ -8,7 +8,7 @@ class Enemy extends CollisionCircle {
       size: 30,
       velocity: {x: 0, y: 0},
       mass: 10,
-      color: "#f44"
+      color: "#ff4444"
     });
     this.seek = {
       x: 0,
@@ -20,7 +20,7 @@ class Enemy extends CollisionCircle {
   update() {
     const angle =
       Vector.angleBetween(this.position, this.player.position);
-    this.seek = Vector.fromAngleSpeed(angle, 0.6);
+    this.seek = Vector.fromAngleSpeed(angle, 0.5);
     this.velocity.x += this.seek.x;
     this.velocity.y += this.seek.y;
     super.update();
