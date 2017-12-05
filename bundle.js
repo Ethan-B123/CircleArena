@@ -91,24 +91,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 const startGame = ({ ctx }) => {
   const scoreDom = document.getElementById('score');
-  // const player = new Player();
+  const newGameBtnDom = document.getElementById('new-game-btn');
   const game = new __WEBPACK_IMPORTED_MODULE_4__game_js__["a" /* default */]({ ctx, scoreDom });
-
-  // game.createEnemy();
-  // game.createPucks(puckPositions);
-
-  // if (window.CircleArena !== undefined) {
-  //   clearInterval(window.CircleArena.drawLoop);
-  // }
-  // window.CircleArena = {};
-  // window.CircleArena.drawLoop = setInterval(() => {
-  //   ctx.clearRect(0, 0, 800, 600);
-  //   game.update();
-  //   game.render(ctx);
-  // }, 16);
-  // window.addEventListener("keydown", player.handleInput("keydown"));
-  // window.addEventListener("keyup", player.handleInput("keyup"));
-
+  newGameBtnDom.addEventListener("click", game.startGame.bind(game));
   game.startGame();
 }
 
@@ -191,10 +176,12 @@ class CollisionCircle {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__enemy__ = __webpack_require__(6);
+
 
 
 class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* default */] {
-  constructor() {
+  constructor({ die }) {
     super({
       position: { x:400, y:300 },
       size: 30,
@@ -209,6 +196,9 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
       right: false,
       brake: false
     }
+    this.die = die;
+    this.handleKeydown = this.handleInput("keydown");
+    this.handleKeyup = this.handleInput("keyup");
   }
 
   update() {
@@ -217,6 +207,13 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
   }
 
   hurtByPuck() {
+    this.die();
+  }
+
+  onHit(otherCircle) {
+    if (otherCircle instanceof __WEBPACK_IMPORTED_MODULE_1__enemy__["a" /* default */]) {
+      this.die();
+    }
   }
 
   moveFromInput() {
@@ -306,6 +303,9 @@ class Game {
   }
 
   startGame() {
+    // debugger;
+    this.destroyObjects();
+    this.endGame();
     const puckPositions = [
       {x: 100, y: 300},
       {x: 400, y: 100},
@@ -317,19 +317,35 @@ class Game {
     this.createPucks(puckPositions);
     this.drawLoop = setInterval(() => {
       this.ctx.clearRect(0, 0, 800, 600);
+      console.log(this.enemies.length);
       this.update();
       this.render(this.ctx);
     }, 16);
   }
 
   endGame() {
-    // ...
+    if (this.drawLoop) {
+      this.render();
+      clearInterval(this.drawLoop);
+      this.drawLoop = undefined;
+    }
+  }
+
+  destroyObjects() {
+    this.pucks = [];
+    this.enemies = [];
   }
 
   createPlayer() {
-    this.player = new __WEBPACK_IMPORTED_MODULE_3__player__["a" /* default */]();
-    window.addEventListener("keydown", this.player.handleInput("keydown"));
-    window.addEventListener("keyup", this.player.handleInput("keyup"));
+    if (this.player) {
+      window.removeEventListener("keydown", this.player.handleKeydown);
+      window.removeEventListener("keyup", this.player.handleKeyup);
+    }
+    this.player = new __WEBPACK_IMPORTED_MODULE_3__player__["a" /* default */]({
+      die: this.endGame.bind(this)
+    });
+    window.addEventListener("keydown", this.player.handleKeydown);
+    window.addEventListener("keyup", this.player.handleKeyup);
   }
 
   killEnemy(enemy) {

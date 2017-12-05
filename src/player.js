@@ -1,7 +1,8 @@
 import CollisionCircle from "./collision_circle.js";
+import Enemy from "./enemy";
 
 class Player extends CollisionCircle {
-  constructor() {
+  constructor({ die }) {
     super({
       position: { x:400, y:300 },
       size: 30,
@@ -16,6 +17,9 @@ class Player extends CollisionCircle {
       right: false,
       brake: false
     }
+    this.die = die;
+    this.handleKeydown = this.handleInput("keydown");
+    this.handleKeyup = this.handleInput("keyup");
   }
 
   update() {
@@ -24,6 +28,13 @@ class Player extends CollisionCircle {
   }
 
   hurtByPuck() {
+    this.die();
+  }
+
+  onHit(otherCircle) {
+    if (otherCircle instanceof Enemy) {
+      this.die();
+    }
   }
 
   moveFromInput() {

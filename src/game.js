@@ -16,6 +16,9 @@ class Game {
   }
 
   startGame() {
+    // debugger;
+    this.destroyObjects();
+    this.endGame();
     const puckPositions = [
       {x: 100, y: 300},
       {x: 400, y: 100},
@@ -27,19 +30,35 @@ class Game {
     this.createPucks(puckPositions);
     this.drawLoop = setInterval(() => {
       this.ctx.clearRect(0, 0, 800, 600);
+      console.log(this.enemies.length);
       this.update();
       this.render(this.ctx);
     }, 16);
   }
 
   endGame() {
-    // ...
+    if (this.drawLoop) {
+      this.render();
+      clearInterval(this.drawLoop);
+      this.drawLoop = undefined;
+    }
+  }
+
+  destroyObjects() {
+    this.pucks = [];
+    this.enemies = [];
   }
 
   createPlayer() {
-    this.player = new Player();
-    window.addEventListener("keydown", this.player.handleInput("keydown"));
-    window.addEventListener("keyup", this.player.handleInput("keyup"));
+    if (this.player) {
+      window.removeEventListener("keydown", this.player.handleKeydown);
+      window.removeEventListener("keyup", this.player.handleKeyup);
+    }
+    this.player = new Player({
+      die: this.endGame.bind(this)
+    });
+    window.addEventListener("keydown", this.player.handleKeydown);
+    window.addEventListener("keyup", this.player.handleKeyup);
   }
 
   killEnemy(enemy) {

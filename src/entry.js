@@ -15,24 +15,9 @@ import Game from "./game.js"
 
 const startGame = ({ ctx }) => {
   const scoreDom = document.getElementById('score');
-  // const player = new Player();
+  const newGameBtnDom = document.getElementById('new-game-btn');
   const game = new Game({ ctx, scoreDom });
-
-  // game.createEnemy();
-  // game.createPucks(puckPositions);
-
-  // if (window.CircleArena !== undefined) {
-  //   clearInterval(window.CircleArena.drawLoop);
-  // }
-  // window.CircleArena = {};
-  // window.CircleArena.drawLoop = setInterval(() => {
-  //   ctx.clearRect(0, 0, 800, 600);
-  //   game.update();
-  //   game.render(ctx);
-  // }, 16);
-  // window.addEventListener("keydown", player.handleInput("keydown"));
-  // window.addEventListener("keyup", player.handleInput("keyup"));
-
+  newGameBtnDom.addEventListener("click", game.startGame.bind(game));
   game.startGame();
 }
 
