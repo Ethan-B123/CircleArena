@@ -71,7 +71,9 @@ class Puck extends CollisionCircle {
   update() {
     super.update();
     const speed = new Vector(this.velocity).length();
-    if (speed > 1 && speed < 2 && !this.safe) {
+    if (speed > 2) {
+      this.color = this.controller.color;
+    } else if (speed > 1 && speed < 2 && !this.safe) {
       this.color = lerpColor("#ffffff", this.controller.color, speed-1);
     } else if (speed <= 1) {
       this.safe = true;

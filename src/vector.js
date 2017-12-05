@@ -36,6 +36,13 @@ class Vector {
     return this;
   }
 
+  distanceTo(otherVec) {
+    return Math.sqrt(
+      Math.pow(this.x - otherVec.x, 2) +
+      Math.pow(this.y - otherVec.y, 2)
+    );
+  }
+
   static fromAngleSpeed(ang, speed) {
     return new Vector({
       x: Math.cos(ang) * speed,

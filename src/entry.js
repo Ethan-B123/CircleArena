@@ -21,8 +21,9 @@ const puckPositions = [
 ]
 
 const startGame = ({ ctx }) => {
+  const scoreDom = document.getElementById('score');
   const player = new Player();
-  const game = new Game({ ctx, player });
+  const game = new Game({ ctx, player, scoreDom });
   game.createEnemies(enemyPositions);
   game.createPucks(puckPositions);
 
