@@ -70,32 +70,28 @@
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__player_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__game_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__enemy_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__player_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__game_js__ = __webpack_require__(3);
+
 
 
 
 
 
 const enemyPositions = [
-  {x: 100, y: 100},
-  {x: 700, y: 100},
-  {x: 100, y: 500},
+  // {x: 100, y: 100},
+  // {x: 700, y: 100},
+  // {x: 100, y: 500},
   {x: 700, y: 500}
 ];
 
 const startGame = ({ ctx }) => {
+  const player = new __WEBPACK_IMPORTED_MODULE_2__player_js__["a" /* default */]();
   const enemies = enemyPositions.map(
-    (pos) => new __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* default */]({
-      position: pos,
-      size: 30,
-      velocity: {x: 0, y: 0},
-      mass: 10,
-      color: "#f44"
-    })
+    (position) => new __WEBPACK_IMPORTED_MODULE_1__enemy_js__["a" /* default */]({ position, player })
   );
-  const player = new __WEBPACK_IMPORTED_MODULE_1__player_js__["a" /* default */]();
-  const game = new __WEBPACK_IMPORTED_MODULE_2__game_js__["a" /* default */]({ ctx, player, enemies });
+  const game = new __WEBPACK_IMPORTED_MODULE_3__game_js__["a" /* default */]({ ctx, player, enemies });
   if (window.CircleArena !== undefined) {
     clearInterval(window.CircleArena.drawLoop);
   }
@@ -341,7 +337,7 @@ const moveOneTick = (circle) => {
 }
 
 const pushOutOfOverlap = (circleA, circleB) => {
-  const bounce = 0.5;
+  const bounce = 1;
   const angleRadians =
     Math.atan2(circleB.position.y - circleA.position.y,
     circleB.position.x - circleA.position.x);
@@ -378,8 +374,8 @@ class Vector {
   rotate(rad) {
     const cos = Math.cos(rad);
     const sin = Math.sin(rad);
-    const newX = Math.round(10000*(this.x * cos - this.y * sin))/10000
-    this.y = Math.round(10000*(this.x * sin + this.y * cos))/10000
+    const newX = Math.round( 10000 *(this.x * cos - this.y * sin))/10000
+    this.y = Math.round( 10000 *(this.x * sin + this.y * cos))/10000
     this.x = newX;
     return this;
   }
@@ -393,13 +389,59 @@ class Vector {
     );
   }
 
+  static fromAngleSpeed(ang, speed) {
+    return new Vector({
+      x: Math.cos(ang) * speed,
+      y: Math.sin(ang) * speed
+    });
+  }
+
   static angleBetween(v1, v2) {
     return Math.atan2(v2.y - v1.y, v2.x - v1.x);
   }
 }
-
+// window.Vector = Vector;
 
 /* harmony default export */ __webpack_exports__["a"] = (Vector);
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collision_circle__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vector__ = __webpack_require__(5);
+
+
+
+class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* default */] {
+  constructor({ position, player }) {
+    super({
+      position: position,
+      size: 30,
+      velocity: {x: 0, y: 0},
+      mass: 10,
+      color: "#f44"
+    });
+    this.seek = {
+      x: 0,
+      y: 0
+    }
+    this.player = player;
+  }
+
+  update() {
+    const angle =
+      __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].angleBetween(this.position, this.player.position);
+    this.seek = __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].fromAngleSpeed(angle, 0.6);
+    this.velocity.x += this.seek.x;
+    this.velocity.y += this.seek.y;
+    super.update();
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Enemy);
 
 
 /***/ })

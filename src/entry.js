@@ -1,26 +1,21 @@
 
 import CollisionCircle from "./collision_circle.js"
+import Enemy from "./enemy.js"
 import Player from "./player.js"
 import Game from "./game.js"
 
 const enemyPositions = [
-  {x: 100, y: 100},
-  {x: 700, y: 100},
-  {x: 100, y: 500},
+  // {x: 100, y: 100},
+  // {x: 700, y: 100},
+  // {x: 100, y: 500},
   {x: 700, y: 500}
 ];
 
 const startGame = ({ ctx }) => {
-  const enemies = enemyPositions.map(
-    (pos) => new CollisionCircle({
-      position: pos,
-      size: 30,
-      velocity: {x: 0, y: 0},
-      mass: 10,
-      color: "#f44"
-    })
-  );
   const player = new Player();
+  const enemies = enemyPositions.map(
+    (position) => new Enemy({ position, player })
+  );
   const game = new Game({ ctx, player, enemies });
   if (window.CircleArena !== undefined) {
     clearInterval(window.CircleArena.drawLoop);

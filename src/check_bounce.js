@@ -58,7 +58,7 @@ const moveOneTick = (circle) => {
 }
 
 const pushOutOfOverlap = (circleA, circleB) => {
-  const bounce = 0.5;
+  const bounce = 1;
   const angleRadians =
     Math.atan2(circleB.position.y - circleA.position.y,
     circleB.position.x - circleA.position.x);
