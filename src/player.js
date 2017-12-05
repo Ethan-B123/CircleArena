@@ -23,6 +23,9 @@ class Player extends CollisionCircle {
     super.update();
   }
 
+  hurtByPuck() {
+  }
+
   moveFromInput() {
     if (this.input.up) {
       this.velocity.y -= 0.9;

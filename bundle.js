@@ -98,15 +98,10 @@ const puckPositions = [
 
 const startGame = ({ ctx }) => {
   const player = new __WEBPACK_IMPORTED_MODULE_2__player_js__["a" /* default */]();
+  const game = new __WEBPACK_IMPORTED_MODULE_4__game_js__["a" /* default */]({ ctx, player });
+  game.createEnemies(enemyPositions);
+  game.createPucks(puckPositions);
 
-  let enemies = enemyPositions.map( //TODO remove let
-    (position) => new __WEBPACK_IMPORTED_MODULE_1__enemy_js__["a" /* default */]({ position, player })
-  );
-  const pucks = puckPositions.map(
-    (position) => new __WEBPACK_IMPORTED_MODULE_3__puck_js__["a" /* default */]({ position })
-  );
-  enemies = enemies.concat(pucks); //TODO remove let from enemies
-  const game = new __WEBPACK_IMPORTED_MODULE_4__game_js__["a" /* default */]({ ctx, player, enemies });
   if (window.CircleArena !== undefined) {
     clearInterval(window.CircleArena.drawLoop);
   }
@@ -224,6 +219,9 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
     super.update();
   }
 
+  hurtByPuck() {
+  }
+
   moveFromInput() {
     if (this.input.up) {
       this.velocity.y -= 0.9;
@@ -289,23 +287,59 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__check_bounce_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__enemy__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__puck__ = __webpack_require__(7);
+
+
 
 
 class Game {
-  constructor({ ctx, player, enemies }) {
+  constructor({ ctx, player }) {
     this.ctx = ctx;
     this.player = player;
-    this.enemies = enemies;
+    this.enemies = [];
+    this.pucks = [];
+  }
+
+  killEnemy(enemy) {
+    const enemies = this.enemies;
+    const idx = enemies.findIndex((checkEnemy) => (
+      enemy === checkEnemy
+    ));
+    if (idx > -1) {
+      enemies.splice(idx, 1)
+    } else {
+      debugger;
+    }
+  }
+
+  createPucks(puckPositions) {
+    puckPositions.forEach(
+      (position) => this.pucks.push(new __WEBPACK_IMPORTED_MODULE_2__puck__["a" /* default */]({ position }))
+    );
+  }
+
+  createEnemies(enemyPositions) {
+    enemyPositions.forEach(
+      (position) => this.enemies.push(new __WEBPACK_IMPORTED_MODULE_1__enemy__["a" /* default */](
+        { position, player: this.player, die: this.killEnemy.bind(this) }
+      ))
+    );
   }
 
   update() {
-    const allCircles = this.enemies.concat([this.player]);
+    const allCircles = this.enemies.concat(
+      this.pucks.concat([this.player])
+    );
+    // debugger;
     allCircles.forEach((circle) => circle.update());
     Object(__WEBPACK_IMPORTED_MODULE_0__check_bounce_js__["a" /* default */])(allCircles);
   }
 
   render(ctx) {
-    const allCircles = this.enemies.concat([this.player]);
+    const allCircles = this.enemies.concat(
+      this.pucks.concat([this.player])
+    );
     allCircles.forEach((circle) => circle.render(ctx));
   }
 
@@ -474,7 +508,7 @@ class Vector {
 
 
 class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* default */] {
-  constructor({ position, player }) {
+  constructor({ position, player, die }) {
     super({
       position: position,
       size: 30,
@@ -486,7 +520,12 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
       x: 0,
       y: 0
     }
+    this.die = die;
     this.player = player;
+  }
+
+  hurtByPuck() {
+    this.die(this)
   }
 
   update() {
@@ -556,11 +595,29 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
   }
 
   onHit(otherCircle) {
+    if (!this.safe && this.iWillHurt(otherCircle)) {
+      otherCircle.hurtByPuck();
+      return;
+    }
     if (otherCircle instanceof __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */] || otherCircle instanceof __WEBPACK_IMPORTED_MODULE_2__enemy__["a" /* default */]) {
       this.controller = otherCircle;
       this.color = otherCircle.color;
       this.safe = false;
     }
+  }
+
+  iWillHurt(otherCircle) {
+    if (this.controller instanceof __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */] &&
+      otherCircle instanceof __WEBPACK_IMPORTED_MODULE_2__enemy__["a" /* default */]) {
+      return true;
+    }
+
+    if (this.controller instanceof __WEBPACK_IMPORTED_MODULE_2__enemy__["a" /* default */] &&
+      otherCircle instanceof __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */]) {
+      return true;
+    }
+
+    return false;
   }
 
   update() {

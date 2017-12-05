@@ -22,15 +22,10 @@ const puckPositions = [
 
 const startGame = ({ ctx }) => {
   const player = new Player();
+  const game = new Game({ ctx, player });
+  game.createEnemies(enemyPositions);
+  game.createPucks(puckPositions);
 
-  let enemies = enemyPositions.map( //TODO remove let
-    (position) => new Enemy({ position, player })
-  );
-  const pucks = puckPositions.map(
-    (position) => new Puck({ position })
-  );
-  enemies = enemies.concat(pucks); //TODO remove let from enemies
-  const game = new Game({ ctx, player, enemies });
   if (window.CircleArena !== undefined) {
     clearInterval(window.CircleArena.drawLoop);
   }

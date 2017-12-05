@@ -2,7 +2,7 @@ import CollisionCircle from "./collision_circle";
 import Vector from "./vector";
 
 class Enemy extends CollisionCircle {
-  constructor({ position, player }) {
+  constructor({ position, player, die }) {
     super({
       position: position,
       size: 30,
@@ -14,7 +14,12 @@ class Enemy extends CollisionCircle {
       x: 0,
       y: 0
     }
+    this.die = die;
     this.player = player;
+  }
+
+  hurtByPuck() {
+    this.die(this)
   }
 
   update() {

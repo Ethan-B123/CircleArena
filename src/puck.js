@@ -43,11 +43,29 @@ class Puck extends CollisionCircle {
   }
 
   onHit(otherCircle) {
+    if (!this.safe && this.iWillHurt(otherCircle)) {
+      otherCircle.hurtByPuck();
+      return;
+    }
     if (otherCircle instanceof Player || otherCircle instanceof Enemy) {
       this.controller = otherCircle;
       this.color = otherCircle.color;
       this.safe = false;
     }
+  }
+
+  iWillHurt(otherCircle) {
+    if (this.controller instanceof Player &&
+      otherCircle instanceof Enemy) {
+      return true;
+    }
+
+    if (this.controller instanceof Enemy &&
+      otherCircle instanceof Player) {
+      return true;
+    }
+
+    return false;
   }
 
   update() {
