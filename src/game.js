@@ -1,16 +1,45 @@
 import CheckBounce from "./check_bounce.js";
 import Enemy from "./enemy";
 import Puck from "./puck";
+import Player from "./player";
 import Vector from "./vector";
 
 class Game {
-  constructor({ ctx, player, scoreDom }) {
+  constructor({ ctx, scoreDom }) {
     this.ctx = ctx;
-    this.player = player;
     this.scoreDom = scoreDom;
     this.score = 0;
     this.enemies = [];
     this.pucks = [];
+    this.player;
+    this.drawLoop;
+  }
+
+  startGame() {
+    const puckPositions = [
+      {x: 100, y: 300},
+      {x: 400, y: 100},
+      {x: 700, y: 300}
+      // {x: 700, y: 500}
+    ];
+    this.createPlayer();
+    this.createEnemy();
+    this.createPucks(puckPositions);
+    this.drawLoop = setInterval(() => {
+      this.ctx.clearRect(0, 0, 800, 600);
+      this.update();
+      this.render(this.ctx);
+    }, 16);
+  }
+
+  endGame() {
+    // ...
+  }
+
+  createPlayer() {
+    this.player = new Player();
+    window.addEventListener("keydown", this.player.handleInput("keydown"));
+    window.addEventListener("keyup", this.player.handleInput("keyup"));
   }
 
   killEnemy(enemy) {
@@ -78,7 +107,8 @@ class Game {
     CheckBounce(allCircles);
   }
 
-  render(ctx) {
+  render() {
+    const ctx = this.ctx;
     const allCircles = this.enemies.concat(
       this.pucks.concat([this.player])
     );

@@ -6,38 +6,34 @@ import Puck from "./puck.js"
 
 import Game from "./game.js"
 
-const enemyPositions = [
-  // {x: 100, y: 100},
-  // {x: 700, y: 100},
-  // {x: 100, y: 500},
-  {x: 700, y: 500}
-];
-
-const puckPositions = [
-  {x: 100, y: 100},
-  {x: 700, y: 100},
-  {x: 100, y: 500}
-  // {x: 700, y: 500}
-]
+// const puckPositions = [
+//   {x: 100, y: 100},
+//   {x: 700, y: 100},
+//   {x: 100, y: 500}
+//   // {x: 700, y: 500}
+// ]
 
 const startGame = ({ ctx }) => {
   const scoreDom = document.getElementById('score');
-  const player = new Player();
-  const game = new Game({ ctx, player, scoreDom });
-  game.createEnemies(enemyPositions);
-  game.createPucks(puckPositions);
+  // const player = new Player();
+  const game = new Game({ ctx, scoreDom });
 
-  if (window.CircleArena !== undefined) {
-    clearInterval(window.CircleArena.drawLoop);
-  }
-  window.CircleArena = {};
-  window.CircleArena.drawLoop = setInterval(() => {
-    ctx.clearRect(0, 0, 800, 600);
-    game.update();
-    game.render(ctx);
-  }, 16);
-  window.addEventListener("keydown", player.handleInput("keydown"));
-  window.addEventListener("keyup", player.handleInput("keyup"));
+  // game.createEnemy();
+  // game.createPucks(puckPositions);
+
+  // if (window.CircleArena !== undefined) {
+  //   clearInterval(window.CircleArena.drawLoop);
+  // }
+  // window.CircleArena = {};
+  // window.CircleArena.drawLoop = setInterval(() => {
+  //   ctx.clearRect(0, 0, 800, 600);
+  //   game.update();
+  //   game.render(ctx);
+  // }, 16);
+  // window.addEventListener("keydown", player.handleInput("keydown"));
+  // window.addEventListener("keyup", player.handleInput("keyup"));
+
+  game.startGame();
 }
 
 document.addEventListener("DOMContentLoaded", () => {

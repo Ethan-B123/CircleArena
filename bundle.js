@@ -82,38 +82,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-const enemyPositions = [
-  // {x: 100, y: 100},
-  // {x: 700, y: 100},
-  // {x: 100, y: 500},
-  {x: 700, y: 500}
-];
-
-const puckPositions = [
-  {x: 100, y: 100},
-  {x: 700, y: 100},
-  {x: 100, y: 500}
-  // {x: 700, y: 500}
-]
+// const puckPositions = [
+//   {x: 100, y: 100},
+//   {x: 700, y: 100},
+//   {x: 100, y: 500}
+//   // {x: 700, y: 500}
+// ]
 
 const startGame = ({ ctx }) => {
   const scoreDom = document.getElementById('score');
-  const player = new __WEBPACK_IMPORTED_MODULE_2__player_js__["a" /* default */]();
-  const game = new __WEBPACK_IMPORTED_MODULE_4__game_js__["a" /* default */]({ ctx, player, scoreDom });
-  game.createEnemies(enemyPositions);
-  game.createPucks(puckPositions);
+  // const player = new Player();
+  const game = new __WEBPACK_IMPORTED_MODULE_4__game_js__["a" /* default */]({ ctx, scoreDom });
 
-  if (window.CircleArena !== undefined) {
-    clearInterval(window.CircleArena.drawLoop);
-  }
-  window.CircleArena = {};
-  window.CircleArena.drawLoop = setInterval(() => {
-    ctx.clearRect(0, 0, 800, 600);
-    game.update();
-    game.render(ctx);
-  }, 16);
-  window.addEventListener("keydown", player.handleInput("keydown"));
-  window.addEventListener("keyup", player.handleInput("keyup"));
+  // game.createEnemy();
+  // game.createPucks(puckPositions);
+
+  // if (window.CircleArena !== undefined) {
+  //   clearInterval(window.CircleArena.drawLoop);
+  // }
+  // window.CircleArena = {};
+  // window.CircleArena.drawLoop = setInterval(() => {
+  //   ctx.clearRect(0, 0, 800, 600);
+  //   game.update();
+  //   game.render(ctx);
+  // }, 16);
+  // window.addEventListener("keydown", player.handleInput("keydown"));
+  // window.addEventListener("keyup", player.handleInput("keyup"));
+
+  game.startGame();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -290,20 +286,50 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__check_bounce_js__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__enemy__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__puck__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__vector__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__player__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__vector__ = __webpack_require__(5);
+
 
 
 
 
 
 class Game {
-  constructor({ ctx, player, scoreDom }) {
+  constructor({ ctx, scoreDom }) {
     this.ctx = ctx;
-    this.player = player;
     this.scoreDom = scoreDom;
     this.score = 0;
     this.enemies = [];
     this.pucks = [];
+    this.player;
+    this.drawLoop;
+  }
+
+  startGame() {
+    const puckPositions = [
+      {x: 100, y: 300},
+      {x: 400, y: 100},
+      {x: 700, y: 300}
+      // {x: 700, y: 500}
+    ];
+    this.createPlayer();
+    this.createEnemy();
+    this.createPucks(puckPositions);
+    this.drawLoop = setInterval(() => {
+      this.ctx.clearRect(0, 0, 800, 600);
+      this.update();
+      this.render(this.ctx);
+    }, 16);
+  }
+
+  endGame() {
+    // ...
+  }
+
+  createPlayer() {
+    this.player = new __WEBPACK_IMPORTED_MODULE_3__player__["a" /* default */]();
+    window.addEventListener("keydown", this.player.handleInput("keydown"));
+    window.addEventListener("keyup", this.player.handleInput("keyup"));
   }
 
   killEnemy(enemy) {
@@ -325,10 +351,10 @@ class Game {
 
   createEnemy() {
     const possiblePositions = [
-      new __WEBPACK_IMPORTED_MODULE_3__vector__["a" /* default */]({x: 100, y: 100}),
-      new __WEBPACK_IMPORTED_MODULE_3__vector__["a" /* default */]({x: 700, y: 100}),
-      new __WEBPACK_IMPORTED_MODULE_3__vector__["a" /* default */]({x: 100, y: 500}),
-      new __WEBPACK_IMPORTED_MODULE_3__vector__["a" /* default */]({x: 700, y: 500})
+      new __WEBPACK_IMPORTED_MODULE_4__vector__["a" /* default */]({x: 100, y: 100}),
+      new __WEBPACK_IMPORTED_MODULE_4__vector__["a" /* default */]({x: 700, y: 100}),
+      new __WEBPACK_IMPORTED_MODULE_4__vector__["a" /* default */]({x: 100, y: 500}),
+      new __WEBPACK_IMPORTED_MODULE_4__vector__["a" /* default */]({x: 700, y: 500})
     ]
     let furthestPosition;
     const player = this.player;
@@ -371,7 +397,8 @@ class Game {
     Object(__WEBPACK_IMPORTED_MODULE_0__check_bounce_js__["a" /* default */])(allCircles);
   }
 
-  render(ctx) {
+  render() {
+    const ctx = this.ctx;
     const allCircles = this.enemies.concat(
       this.pucks.concat([this.player])
     );
