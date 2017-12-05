@@ -1,3 +1,5 @@
+import Vector from "./vector";
+
 class CollisionCircle {
   constructor({ position, size, velocity, mass, color }) {
     this.position = position;
@@ -8,11 +10,36 @@ class CollisionCircle {
     this.dampening = 0.9;
   }
 
+  onHit(otherCircle) {
+    // console.log(otherCircle);
+    // debugger;
+  }
+
   update() {
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
+    this.checkOutOfBounds();
     this.velocity.x *= this.dampening;
     this.velocity.y *= this.dampening;
+  }
+
+  checkOutOfBounds() {
+    if (this.position.x - this.size < 0) {
+      this.position.x = this.size + 0.5;
+      this.velocity = new Vector(this.velocity).flipOver("y")
+    }
+    if (this.position.x + this.size > 800) {
+      this.position.x = 800 - (this.size + 0.5);
+      this.velocity = new Vector(this.velocity).flipOver("y")
+    }
+    if (this.position.y - this.size < 0) {
+      this.position.y = this.size + 0.5;
+      this.velocity = new Vector(this.velocity).flipOver("x")
+    }
+    if (this.position.y + this.size > 600) {
+      this.position.y = 600 - (this.size + 0.5);
+      this.velocity = new Vector(this.velocity).flipOver("x")
+    }
   }
 
   render(ctx) {

@@ -7,8 +7,6 @@ const applyBounce = (circleA, circleB) => {
   );
   if (distance < circleA.size + circleB.size) {
     const angleRadians = Vector.angleBetween(circleA, circleB)
-      // Math.atan2(circleB.position.y - circleA.position.y,
-      // circleB.position.x - circleA.position.x);
 
     const oldCircleA = cloneCircle(circleA);
     const oldCircleB = cloneCircle(circleB);
@@ -31,6 +29,9 @@ const applyBounce = (circleA, circleB) => {
     // circleB.velocity.x = getNewVelocity(circleB, oldCircleA, "x");
     // circleB.velocity.y = getNewVelocity(circleB, oldCircleA, "y");
     pushOutOfOverlap(circleA, circleB);
+
+    circleA.onHit(circleB);
+    circleB.onHit(circleA);
   }
 }
 

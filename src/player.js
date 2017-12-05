@@ -73,7 +73,7 @@ class Player extends CollisionCircle {
 
         break;
         default:
-        console.log(e.key);
+        // console.log(e.key);
       }
     };
   }

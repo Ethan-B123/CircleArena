@@ -22,6 +22,20 @@ class Vector {
     );
   }
 
+  flipOver(axis) {
+    switch (axis) {
+      case "y":
+      this.x = this.x * -1;
+        break;
+      case "x":
+      this.y = this.y * -1;
+        break;
+      default:
+      console.log("vector flip over given wrong element");
+    }
+    return this;
+  }
+
   static fromAngleSpeed(ang, speed) {
     return new Vector({
       x: Math.cos(ang) * speed,
