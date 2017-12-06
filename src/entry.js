@@ -16,7 +16,9 @@ import Game from "./game.js"
 const startGame = ({ ctx }) => {
   const scoresDom = document.getElementsByClassName('score');
   const newGameBtnsDom = document.getElementsByClassName('new-game-btn');
-  const game = new Game({ ctx, scoreDom });
+  const menuModalDom = document.getElementById('menu-modal');
+  const game = new Game({ ctx, scoresDom, menuModalDom });
+  window.menuModalDom = menuModalDom;
   Array.from(newGameBtnsDom).forEach((btn) =>
     btn.addEventListener("click", game.startGame.bind(game))
   );

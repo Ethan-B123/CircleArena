@@ -92,7 +92,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 const startGame = ({ ctx }) => {
   const scoresDom = document.getElementsByClassName('score');
   const newGameBtnsDom = document.getElementsByClassName('new-game-btn');
-  const game = new __WEBPACK_IMPORTED_MODULE_4__game_js__["a" /* default */]({ ctx, scoreDom });
+  const menuModalDom = document.getElementById('menu-modal');
+  const game = new __WEBPACK_IMPORTED_MODULE_4__game_js__["a" /* default */]({ ctx, scoresDom, menuModalDom });
+  window.menuModalDom = menuModalDom;
   Array.from(newGameBtnsDom).forEach((btn) =>
     btn.addEventListener("click", game.startGame.bind(game))
   );
@@ -304,9 +306,10 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
 
 
 class Game {
-  constructor({ ctx, scoresDom }) {
+  constructor({ ctx, scoresDom, menuModalDom }) {
     this.ctx = ctx;
     this.scoresDom = scoresDom;
+    this.menuModalDom = menuModalDom;
     this.score = 0;
     this.enemies = [];
     this.pucks = [];
@@ -332,6 +335,7 @@ class Game {
       this.update();
       this.render(this.ctx);
     }, 16);
+    this.closeModal();
   }
 
   endGame() {
@@ -339,12 +343,27 @@ class Game {
       this.render();
       clearInterval(this.drawLoop);
       this.drawLoop = undefined;
+      this.openModal();
     }
   }
 
   destroyObjects() {
     this.pucks = [];
     this.enemies = [];
+  }
+
+  closeModal() {
+    this.menuModalDom.classList.add("clear");
+    setTimeout(() => {
+      this.menuModalDom.classList.add("hidden");
+    }, 200)
+  }
+
+  openModal() {
+    this.menuModalDom.classList.remove("hidden");
+    setTimeout(() => {
+      this.menuModalDom.classList.remove("clear");
+    }, 300)
   }
 
   createPlayer() {
@@ -372,7 +391,7 @@ class Game {
     if (this.enemies.length === 0) {
       this.createEnemy();
     }
-    addScore();
+    this.addScore();
   }
 
   addScore() {

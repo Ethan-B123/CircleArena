@@ -40,8 +40,9 @@ button {
   font-size: 16px;
   background-color: #fff;
   border: 0px;
-  padding: 0px 23px;
-  border: 1px solid #fff;
+  padding: 10px 20px;
+  /*padding: 0px 23px;*/
+  border: 1px solid #ccc;
   font-family: 'Roboto', sans-serif;
   transition: background-color 200ms ease-in-out,
     color 200ms ease-in-out;
@@ -53,7 +54,7 @@ h1 {
 
 button:hover {
   cursor: pointer;
-  background-color: #bf9f95;
+  background-color: #ccc;
   color: #fff;
 }
 
@@ -113,13 +114,21 @@ button:hover {
   min-height: 300px;
 }
 
+.clear {
+  opacity: 0 !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
 .menu-box {
   flex-grow: 1;
   background-color: #fff;
   min-width: 300px;
   display: flex;
   flex-direction: column;
-  /*justify-content: center;*/
+  justify-content: space-between;
   align-items: center;
   padding: 20px;
 }

@@ -6,9 +6,10 @@ import Vector from "./vector";
 import findOpenSpot from "./openSpots"
 
 class Game {
-  constructor({ ctx, scoresDom }) {
+  constructor({ ctx, scoresDom, menuModalDom }) {
     this.ctx = ctx;
     this.scoresDom = scoresDom;
+    this.menuModalDom = menuModalDom;
     this.score = 0;
     this.enemies = [];
     this.pucks = [];
@@ -34,6 +35,7 @@ class Game {
       this.update();
       this.render(this.ctx);
     }, 16);
+    this.closeModal();
   }
 
   endGame() {
@@ -41,12 +43,27 @@ class Game {
       this.render();
       clearInterval(this.drawLoop);
       this.drawLoop = undefined;
+      this.openModal();
     }
   }
 
   destroyObjects() {
     this.pucks = [];
     this.enemies = [];
+  }
+
+  closeModal() {
+    this.menuModalDom.classList.add("clear");
+    setTimeout(() => {
+      this.menuModalDom.classList.add("hidden");
+    }, 200)
+  }
+
+  openModal() {
+    this.menuModalDom.classList.remove("hidden");
+    setTimeout(() => {
+      this.menuModalDom.classList.remove("clear");
+    }, 300)
   }
 
   createPlayer() {
@@ -74,7 +91,7 @@ class Game {
     if (this.enemies.length === 0) {
       this.createEnemy();
     }
-    addScore();
+    this.addScore();
   }
 
   addScore() {
