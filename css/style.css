@@ -90,6 +90,17 @@ button:hover {
   align-items: center;
   padding: 0px 15px;
 }
+.canvas-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #000
+}
 #canvas {
   display: block;
+  /*background-image: url("https://cdn.pixabay.com/photo/2016/08/12/14/00/background-1588600_960_720.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;*/
 }

@@ -285,6 +285,8 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__puck__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__player__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__vector__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__openSpots__ = __webpack_require__(9);
+
 
 
 
@@ -303,21 +305,20 @@ class Game {
   }
 
   startGame() {
-    // debugger;
     this.destroyObjects();
     this.endGame();
+    this.score = 0;
     const puckPositions = [
       {x: 100, y: 300},
       {x: 400, y: 100},
-      {x: 700, y: 300}
-      // {x: 700, y: 500}
+      {x: 700, y: 300},
+      {x: 400, y: 500}
     ];
     this.createPlayer();
     this.createEnemy();
     this.createPucks(puckPositions);
     this.drawLoop = setInterval(() => {
       this.ctx.clearRect(0, 0, 800, 600);
-      console.log(this.enemies.length);
       this.update();
       this.render(this.ctx);
     }, 16);
@@ -392,8 +393,14 @@ class Game {
   }
 
   createPucks(puckPositions) {
+    const player = this.player;
+    const enemies = this.enemies;
+    const pucks = this.pucks;
     puckPositions.forEach(
-      (position) => this.pucks.push(new __WEBPACK_IMPORTED_MODULE_2__puck__["a" /* default */]({ position }))
+      (position) => this.pucks.push(new __WEBPACK_IMPORTED_MODULE_2__puck__["a" /* default */]({
+        position,
+        // findOpenSpot: findOpenSpot({ player, enemies, pucks })
+      }))
     );
   }
 
@@ -666,7 +673,7 @@ function lerpColor(a, b, amount) {
 }
 
 class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* default */] {
-  constructor({ position }) {
+  constructor({ position, findOpenSpot }) {
     super({
       position: position,
       size: 20,
@@ -676,7 +683,10 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
     });
     this.dampening = 0.99;
     this.controller = this;
+    // this.findOpenSpot = findOpenSpot;
     this.safe = true;
+
+    this.controllerSwapped = false;
   }
 
   onHit(otherCircle) {
@@ -689,6 +699,21 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
       this.color = otherCircle.color;
       this.safe = false;
     }
+    if (otherCircle instanceof Puck && !this.controllerSwapped) {
+      this.swapControllers(otherCircle)
+      this.controllerSwapped = true;
+      otherCircle.controllerSwapped = true;
+    }
+  }
+
+  swapControllers(otherCircle) {
+    const temp = this.controller;
+    this.controller = otherCircle.controller;
+    otherCircle.controller = temp;
+
+    const safeTemp = this.safe;
+    this.safe = otherCircle.safe;
+    otherCircle.safe = safeTemp;
   }
 
   iWillHurt(otherCircle) {
@@ -705,6 +730,11 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
     return false;
   }
 
+  resetPosition() {
+    this.position = this.findOpenSpot();
+    this.velocity = {x: 0, y: 0};
+  }
+
   update() {
     super.update();
     const speed = new __WEBPACK_IMPORTED_MODULE_3__vector__["a" /* default */](this.velocity).length();
@@ -712,16 +742,59 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
       this.color = this.controller.color;
     } else if (speed > 1 && speed < 2 && !this.safe) {
       this.color = lerpColor("#ffffff", this.controller.color, speed-1);
-    } else if (speed <= 1) {
+    } else if (speed <= 1 && speed > 0) {
       this.safe = true;
       this.controller = this;
       this.color = "#44ff44"
+      // this.resetPosition();
     }
+  }
+
+  render(ctx) {
+    this.controllerSwapped = false;
+    super.render(ctx);
   }
 
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Puck);
+
+
+/***/ }),
+/* 8 */,
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__vector__ = __webpack_require__(5);
+
+
+const startingPositions = [
+  {x: 100, y: 300},
+  {x: 400, y: 100},
+  {x: 700, y: 300},
+  {x: 400, y: 500}
+];
+
+const puckRadius = 20;
+
+const findPosition = ({ player, enemies, pucks }) => () => {
+  let openSpots = startingPositions.filter((pos) => enemies.every(enemy => (
+    new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](enemy.position).distanceTo(pos) > puckRadius + enemy.size
+  )));
+  openSpots = openSpots.filter((pos) => pucks.every(puck => (
+    new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](puck.position).distanceTo(pos) > puckRadius + puck.size
+  )));
+  openSpots = openSpots.filter((pos) =>
+    new __WEBPACK_IMPORTED_MODULE_0__vector__["a" /* default */](player.position).distanceTo(pos) > puckRadius + player.size
+  );
+  if (openSpots.length > 0) {
+    return openSpots[0];
+  }
+  return {x: 300, y: 400};
+}
+
+/* unused harmony default export */ var _unused_webpack_default_export = (findPosition);
 
 
 /***/ })

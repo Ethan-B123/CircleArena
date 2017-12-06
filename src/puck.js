@@ -29,7 +29,7 @@ function lerpColor(a, b, amount) {
 }
 
 class Puck extends CollisionCircle {
-  constructor({ position }) {
+  constructor({ position, findOpenSpot }) {
     super({
       position: position,
       size: 20,
@@ -39,7 +39,10 @@ class Puck extends CollisionCircle {
     });
     this.dampening = 0.99;
     this.controller = this;
+    // this.findOpenSpot = findOpenSpot;
     this.safe = true;
+
+    this.controllerSwapped = false;
   }
 
   onHit(otherCircle) {
@@ -52,6 +55,21 @@ class Puck extends CollisionCircle {
       this.color = otherCircle.color;
       this.safe = false;
     }
+    if (otherCircle instanceof Puck && !this.controllerSwapped) {
+      this.swapControllers(otherCircle)
+      this.controllerSwapped = true;
+      otherCircle.controllerSwapped = true;
+    }
+  }
+
+  swapControllers(otherCircle) {
+    const temp = this.controller;
+    this.controller = otherCircle.controller;
+    otherCircle.controller = temp;
+
+    const safeTemp = this.safe;
+    this.safe = otherCircle.safe;
+    otherCircle.safe = safeTemp;
   }
 
   iWillHurt(otherCircle) {
@@ -68,6 +86,11 @@ class Puck extends CollisionCircle {
     return false;
   }
 
+  resetPosition() {
+    this.position = this.findOpenSpot();
+    this.velocity = {x: 0, y: 0};
+  }
+
   update() {
     super.update();
     const speed = new Vector(this.velocity).length();
@@ -75,11 +98,17 @@ class Puck extends CollisionCircle {
       this.color = this.controller.color;
     } else if (speed > 1 && speed < 2 && !this.safe) {
       this.color = lerpColor("#ffffff", this.controller.color, speed-1);
-    } else if (speed <= 1) {
+    } else if (speed <= 1 && speed > 0) {
       this.safe = true;
       this.controller = this;
       this.color = "#44ff44"
+      // this.resetPosition();
     }
+  }
+
+  render(ctx) {
+    this.controllerSwapped = false;
+    super.render(ctx);
   }
 
 }

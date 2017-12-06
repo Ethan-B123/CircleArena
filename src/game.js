@@ -3,6 +3,7 @@ import Enemy from "./enemy";
 import Puck from "./puck";
 import Player from "./player";
 import Vector from "./vector";
+import findOpenSpot from "./openSpots"
 
 class Game {
   constructor({ ctx, scoreDom }) {
@@ -16,21 +17,20 @@ class Game {
   }
 
   startGame() {
-    // debugger;
     this.destroyObjects();
     this.endGame();
+    this.score = 0;
     const puckPositions = [
       {x: 100, y: 300},
       {x: 400, y: 100},
-      {x: 700, y: 300}
-      // {x: 700, y: 500}
+      {x: 700, y: 300},
+      {x: 400, y: 500}
     ];
     this.createPlayer();
     this.createEnemy();
     this.createPucks(puckPositions);
     this.drawLoop = setInterval(() => {
       this.ctx.clearRect(0, 0, 800, 600);
-      console.log(this.enemies.length);
       this.update();
       this.render(this.ctx);
     }, 16);
@@ -105,8 +105,14 @@ class Game {
   }
 
   createPucks(puckPositions) {
+    const player = this.player;
+    const enemies = this.enemies;
+    const pucks = this.pucks;
     puckPositions.forEach(
-      (position) => this.pucks.push(new Puck({ position }))
+      (position) => this.pucks.push(new Puck({
+        position,
+        // findOpenSpot: findOpenSpot({ player, enemies, pucks })
+      }))
     );
   }
 
