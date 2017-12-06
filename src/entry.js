@@ -14,10 +14,12 @@ import Game from "./game.js"
 // ]
 
 const startGame = ({ ctx }) => {
-  const scoreDom = document.getElementById('score');
-  const newGameBtnDom = document.getElementById('new-game-btn');
+  const scoresDom = document.getElementsByClassName('score');
+  const newGameBtnsDom = document.getElementsByClassName('new-game-btn');
   const game = new Game({ ctx, scoreDom });
-  newGameBtnDom.addEventListener("click", game.startGame.bind(game));
+  Array.from(newGameBtnsDom).forEach((btn) =>
+    btn.addEventListener("click", game.startGame.bind(game))
+  );
   game.startGame();
 }
 

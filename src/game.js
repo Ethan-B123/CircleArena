@@ -6,9 +6,9 @@ import Vector from "./vector";
 import findOpenSpot from "./openSpots"
 
 class Game {
-  constructor({ ctx, scoreDom }) {
+  constructor({ ctx, scoresDom }) {
     this.ctx = ctx;
-    this.scoreDom = scoreDom;
+    this.scoresDom = scoresDom;
     this.score = 0;
     this.enemies = [];
     this.pucks = [];
@@ -74,8 +74,15 @@ class Game {
     if (this.enemies.length === 0) {
       this.createEnemy();
     }
+    addScore();
+  }
+
+  addScore() {
     this.score += 1;
-    this.scoreDom.innerText = this.score;
+    this.scoresDom.innerText = this.score;
+    Array.from(this.scoresDom).forEach((score) =>
+      score.innerText = this.score
+    );
   }
 
   createEnemy() {

@@ -7,6 +7,7 @@ class CollisionCircle {
     this.velocity = velocity;
     this.mass = mass;
     this.color = color;
+    this.outerColor = "#fff";
     this.dampening = 0.9;
   }
 
@@ -46,10 +47,17 @@ class CollisionCircle {
     const pos = this.position;
     const size = this.size;
     const prevFillStyle = ctx.fillStyle;
-    ctx.fillStyle = this.color;
+
+    const gradient =
+      ctx.createRadialGradient(pos.x, pos.y, this.size * 0.5, pos.x, pos.y, size);
+    gradient.addColorStop(0, this.color);
+    gradient.addColorStop(1, this.outerColor);
+
+    ctx.fillStyle = gradient;
     ctx.beginPath()
     ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
     ctx.fill();
+    // ctx.strokeStyle = "#555"
     ctx.stroke();
     ctx.fillStyle = prevFillStyle;
   }

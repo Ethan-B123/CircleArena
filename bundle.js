@@ -90,10 +90,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // ]
 
 const startGame = ({ ctx }) => {
-  const scoreDom = document.getElementById('score');
-  const newGameBtnDom = document.getElementById('new-game-btn');
+  const scoresDom = document.getElementsByClassName('score');
+  const newGameBtnsDom = document.getElementsByClassName('new-game-btn');
   const game = new __WEBPACK_IMPORTED_MODULE_4__game_js__["a" /* default */]({ ctx, scoreDom });
-  newGameBtnDom.addEventListener("click", game.startGame.bind(game));
+  Array.from(newGameBtnsDom).forEach((btn) =>
+    btn.addEventListener("click", game.startGame.bind(game))
+  );
   game.startGame();
 }
 
@@ -119,6 +121,7 @@ class CollisionCircle {
     this.velocity = velocity;
     this.mass = mass;
     this.color = color;
+    this.outerColor = "#fff";
     this.dampening = 0.9;
   }
 
@@ -158,10 +161,17 @@ class CollisionCircle {
     const pos = this.position;
     const size = this.size;
     const prevFillStyle = ctx.fillStyle;
-    ctx.fillStyle = this.color;
+
+    const gradient =
+      ctx.createRadialGradient(pos.x, pos.y, this.size * 0.5, pos.x, pos.y, size);
+    gradient.addColorStop(0, this.color);
+    gradient.addColorStop(1, this.outerColor);
+
+    ctx.fillStyle = gradient;
     ctx.beginPath()
     ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
     ctx.fill();
+    // ctx.strokeStyle = "#555"
     ctx.stroke();
     ctx.fillStyle = prevFillStyle;
   }
@@ -294,9 +304,9 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
 
 
 class Game {
-  constructor({ ctx, scoreDom }) {
+  constructor({ ctx, scoresDom }) {
     this.ctx = ctx;
-    this.scoreDom = scoreDom;
+    this.scoresDom = scoresDom;
     this.score = 0;
     this.enemies = [];
     this.pucks = [];
@@ -362,8 +372,15 @@ class Game {
     if (this.enemies.length === 0) {
       this.createEnemy();
     }
+    addScore();
+  }
+
+  addScore() {
     this.score += 1;
-    this.scoreDom.innerText = this.score;
+    this.scoresDom.innerText = this.score;
+    Array.from(this.scoresDom).forEach((score) =>
+      score.innerText = this.score
+    );
   }
 
   createEnemy() {
