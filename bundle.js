@@ -344,7 +344,7 @@ class Game {
       this.update();
       this.render(this.ctx);
     }, 16);
-    // this.animator.add(test({position: {x: 100, y: 300}}))
+    // this.animator.add(explosion({position: {x: 100, y: 300}}))
     this.closeModal();
   }
 
@@ -393,13 +393,22 @@ class Game {
     const idx = enemies.findIndex((checkEnemy) => (
       enemy === checkEnemy
     ));
+    const dyingEnemy = enemies[idx];
     if (idx > -1) {
       enemies.splice(idx, 1)
     } else {
       debugger;
     }
+    this.animator.add(Object(__WEBPACK_IMPORTED_MODULE_7__animations__["a" /* explosion */])({
+      position: {
+        x: dyingEnemy.position.x,
+        y: dyingEnemy.position.y
+      }
+    }))
     if (this.enemies.length === 0) {
-      this.createEnemy();
+      setTimeout(() => {
+        this.createEnemy();
+      }, 1000);
     }
     this.addScore();
   }
@@ -880,6 +889,74 @@ class Animator {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__animation__ = __webpack_require__(12);
 
+
+const explosionSheet = new Image()
+explosionSheet.src = "http://hasgraphics.com/wp-content/uploads/2010/08/spritesheet1.png";
+const smokeSheet = new Image()
+smokeSheet.src = "http://gushh.net/blog/wp-content/uploads/2011/06/smoke_1_40_128_corrected.png";
+
+
+
+const explosion = ({ position }) => (
+  new __WEBPACK_IMPORTED_MODULE_0__animation__["a" /* default */]({
+    state: {
+      counter: 0
+    },
+    update: function() {
+      this.state.counter ++;
+      if (this.state.counter >= 81) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    draw: function(ctx) {
+      const counter = this.state.counter;
+      const srcX = counter % 9;
+      const srcY = Math.floor(counter / 9);
+      // debugger
+      ctx.drawImage(explosionSheet, srcX*100, srcY*100, 100, 100,
+      position.x - 50, position.y - 50, 100, 100);
+    }
+  })
+)
+/* harmony export (immutable) */ __webpack_exports__["a"] = explosion;
+
+const smoke = ({ position }) => (
+  new __WEBPACK_IMPORTED_MODULE_0__animation__["a" /* default */]({
+    state: {
+      counter: 0
+    },
+    update: function() {
+      this.state.counter ++;
+      if (this.state.counter >= 64) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    draw: function(ctx) {
+      const counter = this.state.counter;
+      const srcX = counter % 8;
+      const srcY = Math.floor(counter / 8);
+      // debugger
+      ctx.drawImage(smokeSheet, srcX*128, srcY*128, 128, 128,
+      position.x - 64, position.y - 64, 128, 128);
+    }
+  })
+)
+/* unused harmony export smoke */
+
+
+// img	Source image object	Sprite sheet
+// sx	Source x	Frame index times frame width
+// sy	Source y	0
+// sw	Source width	Frame width
+// sh	Source height	Frame height
+// dx	Destination x	0
+// dy	Destination y	0
+// dw	Destination width	Frame width
+// dh	Destination height	Frame height
 
 const test = ({ position }) => {
   return new __WEBPACK_IMPORTED_MODULE_0__animation__["a" /* default */]({

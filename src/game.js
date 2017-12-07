@@ -5,7 +5,7 @@ import Player from "./player";
 import Vector from "./vector";
 import findOpenSpot from "./openSpots";
 import Animator from "./animator";
-import { test } from "./animations";
+import { explosion, test } from "./animations";
 
 class Game {
   constructor({ ctx, scoresDom, menuModalDom }) {
@@ -38,7 +38,7 @@ class Game {
       this.update();
       this.render(this.ctx);
     }, 16);
-    // this.animator.add(test({position: {x: 100, y: 300}}))
+    // this.animator.add(explosion({position: {x: 100, y: 300}}))
     this.closeModal();
   }
 
@@ -87,13 +87,22 @@ class Game {
     const idx = enemies.findIndex((checkEnemy) => (
       enemy === checkEnemy
     ));
+    const dyingEnemy = enemies[idx];
     if (idx > -1) {
       enemies.splice(idx, 1)
     } else {
       debugger;
     }
+    this.animator.add(explosion({
+      position: {
+        x: dyingEnemy.position.x,
+        y: dyingEnemy.position.y
+      }
+    }))
     if (this.enemies.length === 0) {
-      this.createEnemy();
+      setTimeout(() => {
+        this.createEnemy();
+      }, 1000);
     }
     this.addScore();
   }
