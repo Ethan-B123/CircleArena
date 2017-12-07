@@ -3,7 +3,9 @@ import Enemy from "./enemy";
 import Puck from "./puck";
 import Player from "./player";
 import Vector from "./vector";
-import findOpenSpot from "./openSpots"
+import findOpenSpot from "./openSpots";
+import Animator from "./animator";
+import { test } from "./animations";
 
 class Game {
   constructor({ ctx, scoresDom, menuModalDom }) {
@@ -15,6 +17,7 @@ class Game {
     this.pucks = [];
     this.player;
     this.drawLoop;
+    this.animator = new Animator();
   }
 
   startGame() {
@@ -35,6 +38,7 @@ class Game {
       this.update();
       this.render(this.ctx);
     }, 16);
+    // this.animator.add(test({position: {x: 100, y: 300}}))
     this.closeModal();
   }
 
@@ -162,6 +166,7 @@ class Game {
       this.pucks.concat([this.player])
     );
     allCircles.forEach((circle) => circle.render(ctx));
+    this.animator.render(this.ctx);
   }
 
 }

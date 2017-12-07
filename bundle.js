@@ -117,14 +117,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 class CollisionCircle {
-  constructor({ position, size, velocity, mass, color }) {
+  constructor({ position, size, velocity,
+    mass, color, outerColor, gradientScale }) {
     this.position = position;
     this.size = size;
     this.velocity = velocity;
     this.mass = mass;
     this.color = color;
-    this.outerColor = "#fff";
     this.dampening = 0.9;
+    this.outerColor = outerColor || "#fff";
+    this.gradientScale = gradientScale || 0.5;
   }
 
   onHit(otherCircle) {
@@ -165,7 +167,7 @@ class CollisionCircle {
     const prevFillStyle = ctx.fillStyle;
 
     const gradient =
-      ctx.createRadialGradient(pos.x, pos.y, this.size * 0.5, pos.x, pos.y, size);
+      ctx.createRadialGradient(pos.x, pos.y, this.size * this.gradientScale, pos.x, pos.y, size);
     gradient.addColorStop(0, this.color);
     gradient.addColorStop(1, this.outerColor);
 
@@ -199,7 +201,8 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
       size: 30,
       velocity: { x:0, y:0 },
       mass: 10,
-      color: "#9999ee"
+      color: "#9999ee",
+      outerColor: "#C3C3F9"
     });
     this.input = {
       up: false,
@@ -211,6 +214,7 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
     this.die = die;
     this.handleKeydown = this.handleInput("keydown");
     this.handleKeyup = this.handleInput("keyup");
+    this.gradientScale = 0;
   }
 
   update() {
@@ -298,6 +302,10 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__player__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__vector__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__openSpots__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__animator__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__animations__ = __webpack_require__(11);
+
+
 
 
 
@@ -315,6 +323,7 @@ class Game {
     this.pucks = [];
     this.player;
     this.drawLoop;
+    this.animator = new __WEBPACK_IMPORTED_MODULE_6__animator__["a" /* default */]();
   }
 
   startGame() {
@@ -335,6 +344,7 @@ class Game {
       this.update();
       this.render(this.ctx);
     }, 16);
+    // this.animator.add(test({position: {x: 100, y: 300}}))
     this.closeModal();
   }
 
@@ -462,6 +472,7 @@ class Game {
       this.pucks.concat([this.player])
     );
     allCircles.forEach((circle) => circle.render(ctx));
+    this.animator.render(this.ctx);
   }
 
 }
@@ -642,7 +653,8 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
       size: 30,
       velocity: {x: 0, y: 0},
       mass: 10,
-      color: "#ff4444"
+      color: "#ff4444",
+      outerColor: "#FF9292"
     });
     this.seek = {
       x: 0,
@@ -650,6 +662,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
     }
     this.die = die;
     this.player = player;
+    this.gradientScale = 0;
   }
 
   hurtByPuck() {
@@ -659,7 +672,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
   update() {
     const angle =
       __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].angleBetween(this.position, this.player.position);
-    this.seek = __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].fromAngleSpeed(angle, 0.5);
+    this.seek = __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].fromAngleSpeed(angle, 0.6);
     this.velocity.x += this.seek.x;
     this.velocity.y += this.seek.y;
     super.update();
@@ -831,6 +844,93 @@ const findPosition = ({ player, enemies, pucks }) => () => {
 }
 
 /* unused harmony default export */ var _unused_webpack_default_export = (findPosition);
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Animator {
+  constructor(animations = []) {
+    this.animations = animations
+  }
+
+  render(ctx) {
+    this.animations = this.animations.map((animation) => {
+      return animation.next();
+    });
+    this.animations =
+      this.animations.filter(animation => animation);
+    this.animations.forEach(animation => animation.render(ctx));
+  }
+
+  add(animation) {
+    this.animations.push(animation);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Animator);
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__animation__ = __webpack_require__(12);
+
+
+const test = ({ position }) => {
+  return new __WEBPACK_IMPORTED_MODULE_0__animation__["a" /* default */]({
+    state: {
+      counter: 20
+    },
+    update: function() {
+      this.state.counter--;
+      if (this.state.counter <= 0) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    draw: function(ctx) {
+      ctx.beginPath()
+      ctx.arc(position.x, position.y, 10, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  })
+}
+/* unused harmony export test */
+
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Animation {
+  constructor({state, draw, update}) {
+    this.state = state;
+    this.draw = draw.bind(this);
+    this.update = update.bind(this);
+  }
+
+  next() {
+    if (this.update()) {
+      return this;
+    } else {
+      return false;
+    }
+  }
+
+  render(ctx) {
+    this.draw(ctx);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Animation);
 
 
 /***/ })

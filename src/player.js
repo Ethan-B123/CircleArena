@@ -8,7 +8,8 @@ class Player extends CollisionCircle {
       size: 30,
       velocity: { x:0, y:0 },
       mass: 10,
-      color: "#9999ee"
+      color: "#9999ee",
+      outerColor: "#C3C3F9"
     });
     this.input = {
       up: false,
@@ -20,6 +21,7 @@ class Player extends CollisionCircle {
     this.die = die;
     this.handleKeydown = this.handleInput("keydown");
     this.handleKeyup = this.handleInput("keyup");
+    this.gradientScale = 0;
   }
 
   update() {

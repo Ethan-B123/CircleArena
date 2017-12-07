@@ -8,7 +8,8 @@ class Enemy extends CollisionCircle {
       size: 30,
       velocity: {x: 0, y: 0},
       mass: 10,
-      color: "#ff4444"
+      color: "#ff4444",
+      outerColor: "#FF9292"
     });
     this.seek = {
       x: 0,
@@ -16,6 +17,7 @@ class Enemy extends CollisionCircle {
     }
     this.die = die;
     this.player = player;
+    this.gradientScale = 0;
   }
 
   hurtByPuck() {
@@ -25,7 +27,7 @@ class Enemy extends CollisionCircle {
   update() {
     const angle =
       Vector.angleBetween(this.position, this.player.position);
-    this.seek = Vector.fromAngleSpeed(angle, 0.5);
+    this.seek = Vector.fromAngleSpeed(angle, 0.6);
     this.velocity.x += this.seek.x;
     this.velocity.y += this.seek.y;
     super.update();

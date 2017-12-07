@@ -1,14 +1,16 @@
 import Vector from "./vector";
 
 class CollisionCircle {
-  constructor({ position, size, velocity, mass, color }) {
+  constructor({ position, size, velocity,
+    mass, color, outerColor, gradientScale }) {
     this.position = position;
     this.size = size;
     this.velocity = velocity;
     this.mass = mass;
     this.color = color;
-    this.outerColor = "#fff";
     this.dampening = 0.9;
+    this.outerColor = outerColor || "#fff";
+    this.gradientScale = gradientScale || 0.5;
   }
 
   onHit(otherCircle) {
@@ -49,7 +51,7 @@ class CollisionCircle {
     const prevFillStyle = ctx.fillStyle;
 
     const gradient =
-      ctx.createRadialGradient(pos.x, pos.y, this.size * 0.5, pos.x, pos.y, size);
+      ctx.createRadialGradient(pos.x, pos.y, this.size * this.gradientScale, pos.x, pos.y, size);
     gradient.addColorStop(0, this.color);
     gradient.addColorStop(1, this.outerColor);
 
