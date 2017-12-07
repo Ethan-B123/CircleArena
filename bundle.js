@@ -198,7 +198,7 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
   constructor({ die }) {
     super({
       position: { x:400, y:300 },
-      size: 30,
+      size: 15,
       velocity: { x:0, y:0 },
       mass: 10,
       color: "#9999ee",
@@ -328,7 +328,9 @@ class Game {
 
   startGame() {
     this.destroyObjects();
-    this.endGame();
+    if (this.drawLoop) {
+      clearInterval(this.drawLoop);
+    }
     this.score = 0;
     const puckPositions = [
       {x: 100, y: 300},
@@ -350,9 +352,17 @@ class Game {
 
   endGame() {
     if (this.drawLoop) {
-      this.render();
       clearInterval(this.drawLoop);
-      this.drawLoop = undefined;
+      this.drawLoop = setInterval(() => {
+        this.ctx.clearRect(0, 0, 800, 600);
+        this.gameOverRender(this.ctx);
+      }, 16);
+      this.animator.add(Object(__WEBPACK_IMPORTED_MODULE_7__animations__["a" /* explosion */])({
+        position: {
+          x: this.player.position.x,
+          y: this.player.position.y
+        }
+      }));
       this.openModal();
     }
   }
@@ -480,6 +490,13 @@ class Game {
     const allCircles = this.enemies.concat(
       this.pucks.concat([this.player])
     );
+    allCircles.forEach((circle) => circle.render(ctx));
+    this.animator.render(this.ctx);
+  }
+
+  gameOverRender() {
+    const ctx = this.ctx;
+    const allCircles = this.enemies.concat(this.pucks);
     allCircles.forEach((circle) => circle.render(ctx));
     this.animator.render(this.ctx);
   }
@@ -659,7 +676,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
   constructor({ position, player, die }) {
     super({
       position: position,
-      size: 30,
+      size: 15,
       velocity: {x: 0, y: 0},
       mass: 10,
       color: "#ff4444",
@@ -734,7 +751,7 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
   constructor({ position, findOpenSpot }) {
     super({
       position: position,
-      size: 20,
+      size: 10,
       velocity: {x: 0, y: 0},
       mass: 2,
       color: "#44ff44"

@@ -22,7 +22,9 @@ class Game {
 
   startGame() {
     this.destroyObjects();
-    this.endGame();
+    if (this.drawLoop) {
+      clearInterval(this.drawLoop);
+    }
     this.score = 0;
     const puckPositions = [
       {x: 100, y: 300},
@@ -44,9 +46,17 @@ class Game {
 
   endGame() {
     if (this.drawLoop) {
-      this.render();
       clearInterval(this.drawLoop);
-      this.drawLoop = undefined;
+      this.drawLoop = setInterval(() => {
+        this.ctx.clearRect(0, 0, 800, 600);
+        this.gameOverRender(this.ctx);
+      }, 16);
+      this.animator.add(explosion({
+        position: {
+          x: this.player.position.x,
+          y: this.player.position.y
+        }
+      }));
       this.openModal();
     }
   }
@@ -174,6 +184,13 @@ class Game {
     const allCircles = this.enemies.concat(
       this.pucks.concat([this.player])
     );
+    allCircles.forEach((circle) => circle.render(ctx));
+    this.animator.render(this.ctx);
+  }
+
+  gameOverRender() {
+    const ctx = this.ctx;
+    const allCircles = this.enemies.concat(this.pucks);
     allCircles.forEach((circle) => circle.render(ctx));
     this.animator.render(this.ctx);
   }
