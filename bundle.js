@@ -198,7 +198,7 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
   constructor({ die }) {
     super({
       position: { x:400, y:300 },
-      size: 15,
+      size: 20,
       velocity: { x:0, y:0 },
       mass: 10,
       color: "#9999ee",
@@ -676,7 +676,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
   constructor({ position, player, die }) {
     super({
       position: position,
-      size: 15,
+      size: 20,
       velocity: {x: 0, y: 0},
       mass: 10,
       color: "#ff4444",
@@ -751,7 +751,7 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
   constructor({ position, findOpenSpot }) {
     super({
       position: position,
-      size: 10,
+      size: 15,
       velocity: {x: 0, y: 0},
       mass: 2,
       color: "#44ff44"

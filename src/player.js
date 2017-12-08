@@ -5,7 +5,7 @@ class Player extends CollisionCircle {
   constructor({ die }) {
     super({
       position: { x:400, y:300 },
-      size: 15,
+      size: 20,
       velocity: { x:0, y:0 },
       mass: 10,
       color: "#9999ee",

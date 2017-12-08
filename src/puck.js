@@ -32,7 +32,7 @@ class Puck extends CollisionCircle {
   constructor({ position, findOpenSpot }) {
     super({
       position: position,
-      size: 10,
+      size: 15,
       velocity: {x: 0, y: 0},
       mass: 2,
       color: "#44ff44"

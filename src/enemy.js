@@ -5,7 +5,7 @@ class Enemy extends CollisionCircle {
   constructor({ position, player, die }) {
     super({
       position: position,
-      size: 15,
+      size: 20,
       velocity: {x: 0, y: 0},
       mass: 10,
       color: "#ff4444",
