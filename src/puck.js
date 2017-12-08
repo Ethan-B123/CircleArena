@@ -41,7 +41,7 @@ class Puck extends CollisionCircle {
     this.controller = this;
     // this.findOpenSpot = findOpenSpot;
     this.safe = true;
-
+    this.gradientScale = 0;
     this.controllerSwapped = false;
   }
 

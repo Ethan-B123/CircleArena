@@ -307,21 +307,36 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
 
   moveFromInput() {
     if (this.input.up) {
-      this.velocity.y -= 0.9;
+      // this.velocity.y = -8;
+      this.velocity.y -= 1.4;
     }
     if (this.input.left) {
-      this.velocity.x -= 0.9;
+      // this.velocity.x = -8;
+      this.velocity.x -= 1.4;
     }
     if (this.input.down) {
-      this.velocity.y += 0.9;
+      // this.velocity.y = 8;
+      this.velocity.y += 1.4;
     }
     if (this.input.right) {
-      this.velocity.x += 0.9;
+      // this.velocity.x = 8;
+      this.velocity.x += 1.4;
     }
-    if (this.input.brake) {
+    if (! (
+      this.input.up ||
+      this.input.left ||
+      this.input.down ||
+      this.input.right
+    )) {
       this.velocity.x *= 0.7;
+      // this.velocity.y = 0;
       this.velocity.y *= 0.7;
+      // this.velocity.x = 0;
     }
+    // if (this.input.brake) {
+    //   this.velocity.x *= 0.7;
+    //   this.velocity.y *= 0.7;
+    // }
   }
 
   handleInput(keyDirection) {
@@ -416,7 +431,7 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
     this.controller = this;
     // this.findOpenSpot = findOpenSpot;
     this.safe = true;
-
+    this.gradientScale = 0;
     this.controllerSwapped = false;
   }
 
@@ -606,14 +621,50 @@ class Game {
   }
 
   createBars() {
+    this.dangerBars = [];
     const positions = [
       {x: 400, y: 50},
       {x: 400, y: 550}
     ]
-    const size = { x: 50, y: 20 };
-    this.dangerBars = positions.map((position) => (
-      new __WEBPACK_IMPORTED_MODULE_7__danger_bar__["a" /* default */]({ position, size })
-    ));
+    const size = { x: 30, y: 30 };
+
+    this.dangerBars.push(
+      new __WEBPACK_IMPORTED_MODULE_7__danger_bar__["a" /* default */]({
+        position: { x: 400, y: 100 },
+        size: { x: 30, y: 30 },
+        pathPoints: [
+          {x: 200, y: 100},
+          {x: 600, y: 100}
+        ], pathTicks: 120 })
+    );
+    this.dangerBars.push(
+      new __WEBPACK_IMPORTED_MODULE_7__danger_bar__["a" /* default */]({
+        position: { x: 400, y: 500 },
+        size: { x: 30, y: 30 },
+        pathPoints: [
+          {x: 600, y: 500},
+          {x: 200, y: 500}
+        ], pathTicks: 120 })
+    );
+    this.dangerBars.push(
+      new __WEBPACK_IMPORTED_MODULE_7__danger_bar__["a" /* default */]({
+        position: { x: 200, y: 500 },
+        size: { x: 30, y: 30 },
+        pathPoints: [
+          {x: 200, y: 500},
+          {x: 200, y: 100}
+        ], pathTicks: 120 })
+    );
+    this.dangerBars.push(
+      new __WEBPACK_IMPORTED_MODULE_7__danger_bar__["a" /* default */]({
+        position: { x: 600, y: 100 },
+        size: { x: 30, y: 30 },
+        pathPoints: [
+          {x: 600, y: 100},
+          {x: 600, y: 500}
+        ], pathTicks: 120 })
+    );
+
   }
 
   endGame() {
@@ -649,6 +700,7 @@ class Game {
     this.menuModalDom.classList.remove("hidden");
     setTimeout(() => {
       this.menuModalDom.classList.remove("clear");
+      document.getElementById('new-game-btn').focus();
     }, 300)
   }
 
@@ -747,6 +799,7 @@ class Game {
     const allCircles = this.enemies.concat(
       this.pucks.concat([this.player])
     );
+    this.dangerBars.forEach((bar) => bar.update());
     allCircles.forEach((circle) => circle.update());
     allCircles.forEach((circle) => {
       this.dangerBars.forEach((bar) => bar.checkHits(circle));
@@ -1090,7 +1143,6 @@ class DangerBar {
     }
     if (Math.abs(delta.x) < (this.size.x / 2) + circle.size &&
         Math.abs(delta.y) < (this.size.y / 2) + circle.size) {
-          // debugger;
       circle.onHit(this);
     }
   }
@@ -1098,25 +1150,41 @@ class DangerBar {
   render(ctx) {
     const cornerPosX = this.position.x - (this.size.x / 2);
     const cornerPosY = this.position.y - (this.size.y / 2);
-    ctx.beginPath()
+    ctx.beginPath();
     ctx.rect(cornerPosX, cornerPosY, this.size.x, this.size.y);
-    // ctx.fillRect(cornerPosX, cornerPosY, this.size.x, this.size.y);
-    // debugger;
-    ctx.fill();
+    const gradient = ctx.createLinearGradient(
+      cornerPosX,
+      cornerPosY,
+      cornerPosX + this.size.x,
+      cornerPosY + this.size.y);
+    gradient.addColorStop(0, '#ff4444');
+    gradient.addColorStop(1, '#FF9292');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(cornerPosX, cornerPosY, this.size.x, this.size.y);
     ctx.stroke();
   }
 
-  findNextPos() {
+  moveOnPath() {
+    const percent = this.currentTicks / this.pathTicks;
+    if (percent < 0 || percent > 1) {
+      this.direction = !this.direction;
+    }
+
+    const difX = this.pathPoints[1].x - this.pathPoints[0].x;
+    const difY = this.pathPoints[1].y - this.pathPoints[0].y;
+    this.position.x = (difX * percent) + this.pathPoints[0].x;
+    this.position.y = (difY * percent) + this.pathPoints[0].y;
+    // debugger;
+
+    if (this.direction) {
+      this.currentTicks++;
+    } else {
+      this.currentTicks--;
+    }
   }
 
   update() {
-    const currentPoint = this.currentPoint;
-    const currentTicks = this.currentTicks;
-    const direction = this.direction;
-    const delta = {
-      x: circle.position.x - this.position.x,
-      y: circle.position.y - this.position.y
-    }
+    this.moveOnPath();
   }
 }
 

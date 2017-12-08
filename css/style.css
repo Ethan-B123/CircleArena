@@ -44,8 +44,8 @@ button {
   /*padding: 0px 23px;*/
   border: 1px solid #ccc;
   font-family: 'Roboto', sans-serif;
-  transition: background-color 200ms ease-in-out,
-    color 200ms ease-in-out;
+  transition: background-color 100ms ease-in-out,
+    color 100ms ease-in-out;
 }
 
 h1 {
@@ -54,8 +54,12 @@ h1 {
 
 button:hover {
   cursor: pointer;
+  background-color: #ddd;
+  /*color: #fff;*/
+}
+button:active {
   background-color: #ccc;
-  color: #fff;
+  /*color: #fff;*/
 }
 
 .center-900 {

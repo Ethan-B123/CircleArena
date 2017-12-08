@@ -54,14 +54,50 @@ class Game {
   }
 
   createBars() {
+    this.dangerBars = [];
     const positions = [
       {x: 400, y: 50},
       {x: 400, y: 550}
     ]
-    const size = { x: 50, y: 20 };
-    this.dangerBars = positions.map((position) => (
-      new DangerBar({ position, size })
-    ));
+    const size = { x: 30, y: 30 };
+
+    this.dangerBars.push(
+      new DangerBar({
+        position: { x: 400, y: 100 },
+        size: { x: 30, y: 30 },
+        pathPoints: [
+          {x: 200, y: 100},
+          {x: 600, y: 100}
+        ], pathTicks: 120 })
+    );
+    this.dangerBars.push(
+      new DangerBar({
+        position: { x: 400, y: 500 },
+        size: { x: 30, y: 30 },
+        pathPoints: [
+          {x: 600, y: 500},
+          {x: 200, y: 500}
+        ], pathTicks: 120 })
+    );
+    this.dangerBars.push(
+      new DangerBar({
+        position: { x: 200, y: 500 },
+        size: { x: 30, y: 30 },
+        pathPoints: [
+          {x: 200, y: 500},
+          {x: 200, y: 100}
+        ], pathTicks: 120 })
+    );
+    this.dangerBars.push(
+      new DangerBar({
+        position: { x: 600, y: 100 },
+        size: { x: 30, y: 30 },
+        pathPoints: [
+          {x: 600, y: 100},
+          {x: 600, y: 500}
+        ], pathTicks: 120 })
+    );
+
   }
 
   endGame() {
@@ -97,6 +133,7 @@ class Game {
     this.menuModalDom.classList.remove("hidden");
     setTimeout(() => {
       this.menuModalDom.classList.remove("clear");
+      document.getElementById('new-game-btn').focus();
     }, 300)
   }
 
@@ -195,6 +232,7 @@ class Game {
     const allCircles = this.enemies.concat(
       this.pucks.concat([this.player])
     );
+    this.dangerBars.forEach((bar) => bar.update());
     allCircles.forEach((circle) => circle.update());
     allCircles.forEach((circle) => {
       this.dangerBars.forEach((bar) => bar.checkHits(circle));

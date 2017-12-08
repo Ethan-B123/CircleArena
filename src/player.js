@@ -45,21 +45,36 @@ class Player extends CollisionCircle {
 
   moveFromInput() {
     if (this.input.up) {
-      this.velocity.y -= 0.9;
+      // this.velocity.y = -8;
+      this.velocity.y -= 1.4;
     }
     if (this.input.left) {
-      this.velocity.x -= 0.9;
+      // this.velocity.x = -8;
+      this.velocity.x -= 1.4;
     }
     if (this.input.down) {
-      this.velocity.y += 0.9;
+      // this.velocity.y = 8;
+      this.velocity.y += 1.4;
     }
     if (this.input.right) {
-      this.velocity.x += 0.9;
+      // this.velocity.x = 8;
+      this.velocity.x += 1.4;
     }
-    if (this.input.brake) {
+    if (! (
+      this.input.up ||
+      this.input.left ||
+      this.input.down ||
+      this.input.right
+    )) {
       this.velocity.x *= 0.7;
+      // this.velocity.y = 0;
       this.velocity.y *= 0.7;
+      // this.velocity.x = 0;
     }
+    // if (this.input.brake) {
+    //   this.velocity.x *= 0.7;
+    //   this.velocity.y *= 0.7;
+    // }
   }
 
   handleInput(keyDirection) {
