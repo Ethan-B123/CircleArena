@@ -1,5 +1,6 @@
 import CollisionCircle from "./collision_circle.js";
 import Enemy from "./enemy";
+import DangerBar from "./danger_bar";
 
 class Player extends CollisionCircle {
   constructor({ die }) {
@@ -35,6 +36,9 @@ class Player extends CollisionCircle {
 
   onHit(otherCircle) {
     if (otherCircle instanceof Enemy) {
+      this.die();
+    }
+    if (otherCircle instanceof DangerBar) {
       this.die();
     }
   }

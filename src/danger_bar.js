@@ -1,4 +1,4 @@
-import Vector
+
 
 // position in center
 class DangerBar {
@@ -23,10 +23,9 @@ class DangerBar {
       x: circle.position.x - this.position.x,
       y: circle.position.y - this.position.y
     }
-    debugger;
-    if (delta.x < (this.size.x / 2) + circle.size) {
-      circle.onHit(this);
-    } else if (delta.y < (this.size.y / 2) + circle.size) {
+    if (Math.abs(delta.x) < (this.size.x / 2) + circle.size &&
+        Math.abs(delta.y) < (this.size.y / 2) + circle.size) {
+          // debugger;
       circle.onHit(this);
     }
   }
@@ -34,9 +33,12 @@ class DangerBar {
   render(ctx) {
     const cornerPosX = this.position.x - (this.size.x / 2);
     const cornerPosY = this.position.y - (this.size.y / 2);
+    ctx.beginPath()
     ctx.rect(cornerPosX, cornerPosY, this.size.x, this.size.y);
+    // ctx.fillRect(cornerPosX, cornerPosY, this.size.x, this.size.y);
+    // debugger;
     ctx.fill();
-    ctx.stroke;
+    ctx.stroke();
   }
 
   findNextPos() {

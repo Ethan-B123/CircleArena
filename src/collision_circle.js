@@ -61,6 +61,7 @@ class CollisionCircle {
     ctx.fill();
     // ctx.strokeStyle = "#555"
     ctx.stroke();
+    ctx.closePath();
     ctx.fillStyle = prevFillStyle;
   }
 }

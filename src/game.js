@@ -5,6 +5,7 @@ import Player from "./player";
 import Vector from "./vector";
 import findOpenSpot from "./openSpots";
 import Animator from "./animator";
+import DangerBar from "./danger_bar";
 import { explosion, test } from "./animations";
 
 class Game {
@@ -28,13 +29,21 @@ class Game {
     this.score = 0;
     const puckPositions = [
       {x: 100, y: 300},
+      {x: 50, y: 300},
+
       {x: 400, y: 100},
+      // {x: 400, y: 50},
+
       {x: 700, y: 300},
-      {x: 400, y: 500}
+      {x: 750, y: 300},
+
+      {x: 400, y: 500},
+      // {x: 400, y: 550}
     ];
     this.createPlayer();
     this.createEnemy();
     this.createPucks(puckPositions);
+    this.createBars();
     this.drawLoop = setInterval(() => {
       this.ctx.clearRect(0, 0, 800, 600);
       this.update();
@@ -42,6 +51,17 @@ class Game {
     }, 16);
     // this.animator.add(explosion({position: {x: 100, y: 300}}))
     this.closeModal();
+  }
+
+  createBars() {
+    const positions = [
+      {x: 400, y: 50},
+      {x: 400, y: 550}
+    ]
+    const size = { x: 50, y: 20 };
+    this.dangerBars = positions.map((position) => (
+      new DangerBar({ position, size })
+    ));
   }
 
   endGame() {
@@ -176,6 +196,9 @@ class Game {
       this.pucks.concat([this.player])
     );
     allCircles.forEach((circle) => circle.update());
+    allCircles.forEach((circle) => {
+      this.dangerBars.forEach((bar) => bar.checkHits(circle));
+    });
     CheckBounce(allCircles);
   }
 
@@ -184,6 +207,7 @@ class Game {
     const allCircles = this.enemies.concat(
       this.pucks.concat([this.player])
     );
+    this.dangerBars.forEach((bar) => bar.render(ctx));
     allCircles.forEach((circle) => circle.render(ctx));
     this.animator.render(this.ctx);
   }
@@ -191,6 +215,7 @@ class Game {
   gameOverRender() {
     const ctx = this.ctx;
     const allCircles = this.enemies.concat(this.pucks);
+    this.dangerBars.forEach((bar) => bar.render(ctx));
     allCircles.forEach((circle) => circle.render(ctx));
     this.animator.render(this.ctx);
   }
