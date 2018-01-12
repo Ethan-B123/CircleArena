@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -217,10 +217,10 @@ class CollisionCircle {
 
 
 class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* default */] {
-  constructor({ position, player, die }) {
+  constructor({ position, player, speed, die }) {
     super({
       position: position,
-      size: 20,
+      size: 35,
       velocity: {x: 0, y: 0},
       mass: 10,
       color: "#ff4444",
@@ -230,6 +230,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
       x: 0,
       y: 0
     }
+    this.speed = speed
     this.die = die;
     this.player = player;
     this.gradientScale = 0;
@@ -242,7 +243,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
   update() {
     const angle =
       __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].angleBetween(this.position, this.player.position);
-    this.seek = __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].fromAngleSpeed(angle, 0.6);
+    this.seek = __WEBPACK_IMPORTED_MODULE_1__vector__["a" /* default */].fromAngleSpeed(angle, this.speed);
     this.velocity.x += this.seek.x;
     this.velocity.y += this.seek.y;
     super.update();
@@ -259,7 +260,7 @@ class Enemy extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defau
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__enemy__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__danger_bar__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__danger_bar__ = __webpack_require__(4);
 
 
 
@@ -381,6 +382,86 @@ class Player extends __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__["a" /* d
 
 /***/ }),
 /* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+
+// position in center
+class DangerBar {
+  constructor({ position, size, pathPoints, pathTicks }) {
+    this.position = position;
+    this.size = size;
+    this.pathPoints = pathPoints;
+    this.pathTicks = pathTicks;
+    this.corners = [
+      { x: -size.x/2, y: -size.y/2 },
+      { x: size.x/2, y: -size.y/2 },
+      { x: size.x/2, y: size.y/2 },
+      { x: -size.x/2, y: size.y/2 }
+    ]
+    this.currentPoint = 0;
+    this.currentTicks = 0;
+    this.direction = true;
+  }
+
+  checkHits(circle) {
+    const delta = {
+      x: circle.position.x - this.position.x,
+      y: circle.position.y - this.position.y
+    }
+    if (Math.abs(delta.x) < (this.size.x / 2) + circle.size &&
+        Math.abs(delta.y) < (this.size.y / 2) + circle.size) {
+      circle.onHit(this);
+    }
+  }
+
+  render(ctx) {
+    const cornerPosX = this.position.x - (this.size.x / 2);
+    const cornerPosY = this.position.y - (this.size.y / 2);
+    ctx.beginPath();
+    ctx.rect(cornerPosX, cornerPosY, this.size.x, this.size.y);
+    const gradient = ctx.createLinearGradient(
+      cornerPosX,
+      cornerPosY,
+      cornerPosX + this.size.x,
+      cornerPosY + this.size.y);
+    gradient.addColorStop(0, '#ff4444');
+    gradient.addColorStop(1, '#FF9292');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(cornerPosX, cornerPosY, this.size.x, this.size.y);
+    ctx.stroke();
+  }
+
+  moveOnPath() {
+    const percent = this.currentTicks / this.pathTicks;
+    if (percent < 0 || percent > 1) {
+      this.direction = !this.direction;
+    }
+
+    const difX = this.pathPoints[1].x - this.pathPoints[0].x;
+    const difY = this.pathPoints[1].y - this.pathPoints[0].y;
+    this.position.x = (difX * percent) + this.pathPoints[0].x;
+    this.position.y = (difY * percent) + this.pathPoints[0].y;
+    // debugger;
+
+    if (this.direction) {
+      this.currentTicks++;
+    } else {
+      this.currentTicks--;
+    }
+  }
+
+  update() {
+    this.moveOnPath();
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (DangerBar);
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -507,7 +588,7 @@ class Puck extends __WEBPACK_IMPORTED_MODULE_0__collision_circle__["a" /* defaul
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -515,8 +596,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collision_circle_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__enemy_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__player_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__puck_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__game_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__puck_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__game_js__ = __webpack_require__(7);
 
 
 
@@ -552,19 +633,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__check_bounce_js__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__check_bounce_js__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__enemy__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__puck__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__puck__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__player__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__vector__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__openSpots__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__animator__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__danger_bar__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__animations__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__openSpots__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__animator__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__danger_bar__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__animations__ = __webpack_require__(11);
 
 
 
@@ -581,6 +662,7 @@ class Game {
     this.scoresDom = scoresDom;
     this.menuModalDom = menuModalDom;
     this.score = 0;
+    this.dangerBars = [];
     this.enemies = [];
     this.pucks = [];
     this.player;
@@ -589,6 +671,8 @@ class Game {
   }
 
   startGame() {
+    this.score = -1;
+    this.addScore();
     this.destroyObjects();
     if (this.drawLoop) {
       clearInterval(this.drawLoop);
@@ -610,7 +694,7 @@ class Game {
     this.createPlayer();
     this.createEnemy();
     this.createPucks(puckPositions);
-    this.createBars();
+    // this.createBars();
     this.drawLoop = setInterval(() => {
       this.ctx.clearRect(0, 0, 800, 600);
       this.update();
@@ -736,7 +820,7 @@ class Game {
     if (this.enemies.length === 0) {
       setTimeout(() => {
         this.createEnemy();
-      }, 1000);
+      }, 1500);
     }
     this.addScore();
   }
@@ -768,11 +852,14 @@ class Game {
         furthestPosition = possiblePosition;
       }
     });
+    const speed = 0.3 + 0.05 * this.score;
     this.enemies.push(new __WEBPACK_IMPORTED_MODULE_1__enemy__["a" /* default */]({
       position: furthestPosition,
+      speed,
       player,
       die: this.killEnemy.bind(this)
     }));
+    //
   }
 
   createPucks(puckPositions) {
@@ -831,7 +918,7 @@ class Game {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -859,10 +946,8 @@ const applyBounce = (circleA, circleB) => {
       y: getNewVelocity(circleB, oldCircleA, "y")
     })
 
-    circleA.velocity.x = newAVelocity.x;
-    circleA.velocity.y = newAVelocity.y;
-    circleB.velocity.x = newBVelocity.x;
-    circleB.velocity.y = newBVelocity.y;
+    circleA.velocity = newAVelocity;
+    circleB.velocity = newBVelocity;
 
     // circleB.velocity.x = getNewVelocity(circleB, oldCircleA, "x");
     // circleB.velocity.y = getNewVelocity(circleB, oldCircleA, "y");
@@ -921,7 +1006,7 @@ const pushOutOfOverlap = (circleA, circleB) => {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -957,7 +1042,7 @@ const findPosition = ({ player, enemies, pucks }) => () => {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -984,11 +1069,11 @@ class Animator {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__animation__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__animation__ = __webpack_require__(12);
 
 
 const explosionSheet = new Image()
@@ -1084,7 +1169,7 @@ const test = ({ position }) => {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1109,86 +1194,6 @@ class Animation {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Animation);
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-
-// position in center
-class DangerBar {
-  constructor({ position, size, pathPoints, pathTicks }) {
-    this.position = position;
-    this.size = size;
-    this.pathPoints = pathPoints;
-    this.pathTicks = pathTicks;
-    this.corners = [
-      { x: -size.x/2, y: -size.y/2 },
-      { x: size.x/2, y: -size.y/2 },
-      { x: size.x/2, y: size.y/2 },
-      { x: -size.x/2, y: size.y/2 }
-    ]
-    this.currentPoint = 0;
-    this.currentTicks = 0;
-    this.direction = true;
-  }
-
-  checkHits(circle) {
-    const delta = {
-      x: circle.position.x - this.position.x,
-      y: circle.position.y - this.position.y
-    }
-    if (Math.abs(delta.x) < (this.size.x / 2) + circle.size &&
-        Math.abs(delta.y) < (this.size.y / 2) + circle.size) {
-      circle.onHit(this);
-    }
-  }
-
-  render(ctx) {
-    const cornerPosX = this.position.x - (this.size.x / 2);
-    const cornerPosY = this.position.y - (this.size.y / 2);
-    ctx.beginPath();
-    ctx.rect(cornerPosX, cornerPosY, this.size.x, this.size.y);
-    const gradient = ctx.createLinearGradient(
-      cornerPosX,
-      cornerPosY,
-      cornerPosX + this.size.x,
-      cornerPosY + this.size.y);
-    gradient.addColorStop(0, '#ff4444');
-    gradient.addColorStop(1, '#FF9292');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(cornerPosX, cornerPosY, this.size.x, this.size.y);
-    ctx.stroke();
-  }
-
-  moveOnPath() {
-    const percent = this.currentTicks / this.pathTicks;
-    if (percent < 0 || percent > 1) {
-      this.direction = !this.direction;
-    }
-
-    const difX = this.pathPoints[1].x - this.pathPoints[0].x;
-    const difY = this.pathPoints[1].y - this.pathPoints[0].y;
-    this.position.x = (difX * percent) + this.pathPoints[0].x;
-    this.position.y = (difY * percent) + this.pathPoints[0].y;
-    // debugger;
-
-    if (this.direction) {
-      this.currentTicks++;
-    } else {
-      this.currentTicks--;
-    }
-  }
-
-  update() {
-    this.moveOnPath();
-  }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (DangerBar);
 
 
 /***/ })

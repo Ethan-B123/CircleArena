@@ -21,10 +21,8 @@ const applyBounce = (circleA, circleB) => {
       y: getNewVelocity(circleB, oldCircleA, "y")
     })
 
-    circleA.velocity.x = newAVelocity.x;
-    circleA.velocity.y = newAVelocity.y;
-    circleB.velocity.x = newBVelocity.x;
-    circleB.velocity.y = newBVelocity.y;
+    circleA.velocity = newAVelocity;
+    circleB.velocity = newBVelocity;
 
     // circleB.velocity.x = getNewVelocity(circleB, oldCircleA, "x");
     // circleB.velocity.y = getNewVelocity(circleB, oldCircleA, "y");

@@ -14,6 +14,7 @@ class Game {
     this.scoresDom = scoresDom;
     this.menuModalDom = menuModalDom;
     this.score = 0;
+    this.dangerBars = [];
     this.enemies = [];
     this.pucks = [];
     this.player;
@@ -22,6 +23,8 @@ class Game {
   }
 
   startGame() {
+    this.score = -1;
+    this.addScore();
     this.destroyObjects();
     if (this.drawLoop) {
       clearInterval(this.drawLoop);
@@ -43,7 +46,7 @@ class Game {
     this.createPlayer();
     this.createEnemy();
     this.createPucks(puckPositions);
-    this.createBars();
+    // this.createBars();
     this.drawLoop = setInterval(() => {
       this.ctx.clearRect(0, 0, 800, 600);
       this.update();
@@ -169,7 +172,7 @@ class Game {
     if (this.enemies.length === 0) {
       setTimeout(() => {
         this.createEnemy();
-      }, 1000);
+      }, 1500);
     }
     this.addScore();
   }
@@ -201,11 +204,14 @@ class Game {
         furthestPosition = possiblePosition;
       }
     });
+    const speed = 0.3 + 0.05 * this.score;
     this.enemies.push(new Enemy({
       position: furthestPosition,
+      speed,
       player,
       die: this.killEnemy.bind(this)
     }));
+    //
   }
 
   createPucks(puckPositions) {
